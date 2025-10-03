@@ -5,29 +5,46 @@ import "/styles/MedicalForm.css"; // Adjust path as needed
 import db from "../lib/db"; // Ensure this path is correct
 import SignaturePad from "../app/components/SignaturePad"; // Import the SignaturePad
 
+// ✅ Strongly typed form data interface
+interface MedicalFormData {
+  patientName: string;
+  age: number;
+  serviceDate: string;
+  dob: string;
+  address?: string;
+  signature: string;
+}
+
 const MedicalForm = () => {
   const [signature, setSignature] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
 
-    // Convert age to number and validate
-    data.age = parseInt(data.age as string, 10);
+    const formData = new FormData(e.currentTarget);
+
+    // ✅ Build a typed object
+    const data: MedicalFormData = {
+      patientName: formData.get("patientName") as string,
+      age: parseInt(formData.get("age") as string, 10),
+      serviceDate: formData.get("serviceDate") as string,
+      dob: formData.get("dob") as string,
+      address: formData.get("address") as string,
+      signature: signature ?? "",
+    };
+
+    // Validate age
     if (isNaN(data.age)) {
       console.error("Invalid age");
       return;
     }
 
-    // Add signature to form data
+    // Validate signature
     if (!signature) {
       alert("Please add your signature before submitting.");
       return;
     }
-    data.signature = signature; // Store signature as a data URL
 
-    // Log the form data for debugging
     console.log("Form Data:", data);
 
     try {
@@ -78,7 +95,6 @@ const MedicalForm = () => {
           <input type="text" name="address" />
         </div>
 
-
         {/* Signature Field */}
         <div className="form-group">
           <h3>Signature</h3>
@@ -98,3 +114,4 @@ const MedicalForm = () => {
 };
 
 export default MedicalForm;
+
