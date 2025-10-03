@@ -54,9 +54,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ 
-     margin: "0"
-    }}>
+      <head>
+        {/* Apple Touch Icons for iOS */}
+        <link rel="apple-touch-icon" href="/icons/ios/120.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="120x120"
+          href="/icons/ios/120.png"
+        />
+
+        {/* Meta Tags for iOS Web App */}
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="default"
+        />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+      </head>
+      <body style={{ margin: "0" }}>
         <Header />
         <main>{children}</main>
         <Footer />
