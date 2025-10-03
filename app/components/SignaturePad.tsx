@@ -2,17 +2,25 @@
 import React, { useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 
-const SignaturePad = () => {
+
+interface Props {
+  onSave: (signature: string) => void;
+}
+
+const SignaturePad: React.FC<Props> = ({ onSave }) => {
   const sigCanvas = useRef<SignatureCanvas | null>(null);
 
   const clear = () => {
     sigCanvas.current?.clear();
+    onSave(""); // clear signature in parent
   };
 
   const save = () => {
     if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
       const dataURL = sigCanvas.current.toDataURL("image/png");
-      console.log("Signature saved:", dataURL);
+      onSave(dataURL); // send signature back to parent form
+    } else {
+      onSave("");
     }
   };
 
@@ -24,11 +32,15 @@ const SignaturePad = () => {
         canvasProps={{
           width: 500,
           height: 200,
-          className: "sigCanvas"
+          className: "sigCanvas",
         }}
       />
-      <button onClick={clear}>Clear</button>
-      <button onClick={save}>Save</button>
+      <button type="button" onClick={clear}>
+        Clear
+      </button>
+      <button type="button" onClick={save}>
+        Save
+      </button>
     </div>
   );
 };

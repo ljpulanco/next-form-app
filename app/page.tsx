@@ -1,9 +1,9 @@
-"use client"; // Client Component
+"use client";
 
 import React, { useState } from "react";
-import "/styles/MedicalForm.css"; // Adjust path as needed
-import db from "../lib/db"; // Ensure this path is correct
-import SignaturePad from "../app/components/SignaturePad"; // Import the SignaturePad
+import "/styles/MedicalForm.css"; 
+import db from "../lib/db";   // ✅ fixed for root lib
+import SignaturePad from "./components/SignaturePad"; 
 
 // ✅ Strongly typed form data interface
 interface MedicalFormData {
@@ -16,30 +16,27 @@ interface MedicalFormData {
 }
 
 const MedicalForm = () => {
-  const [signature, setSignature] = useState<string | null>(null);
+  const [signature, setSignature] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
 
-    // ✅ Build a typed object
     const data: MedicalFormData = {
       patientName: formData.get("patientName") as string,
       age: parseInt(formData.get("age") as string, 10),
       serviceDate: formData.get("serviceDate") as string,
       dob: formData.get("dob") as string,
       address: formData.get("address") as string,
-      signature: signature ?? "",
+      signature: signature,
     };
 
-    // Validate age
     if (isNaN(data.age)) {
-      console.error("Invalid age");
+      alert("Please enter a valid age.");
       return;
     }
 
-    // Validate signature
     if (!signature) {
       alert("Please add your signature before submitting.");
       return;
@@ -48,15 +45,16 @@ const MedicalForm = () => {
     console.log("Form Data:", data);
 
     try {
-      // Save to IndexedDB
       const id = await db.users.add(data);
       console.log(`Data saved with ID: ${id}`);
 
-      // Fetch and log all users
       const users = await db.users.toArray();
       console.log("All Users:", users);
+
+      alert("Form submitted successfully!");
     } catch (error) {
       console.error("Error saving data:", error);
+      alert("There was an error saving your data.");
     }
   };
 
@@ -91,7 +89,7 @@ const MedicalForm = () => {
 
         {/* Address */}
         <div className="form-group">
-          <label htmlFor="Address">Address</label>
+          <label htmlFor="address">Address</label>
           <input type="text" name="address" />
         </div>
 
@@ -114,4 +112,3 @@ const MedicalForm = () => {
 };
 
 export default MedicalForm;
-
