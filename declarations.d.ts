@@ -1,3 +1,4 @@
+// declarations.d.ts
 declare module "react-signature-canvas" {
   import * as React from "react";
 
